@@ -75,3 +75,20 @@ export const getRawTweets = async (): Promise<TwitterResponse> => {
     throw error;
   }
 };
+export const getSummary = async (tweets:any[]): Promise<any> => {
+  try {
+    const response = await axios.post(
+      `${url}/twitter/summary`,{
+        tweets,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Axios error getting summery:', error.response?.data || error.message);
+    } else {
+      console.error('Unexpected error getting summery:', error);
+    }
+    throw error;
+  }
+};

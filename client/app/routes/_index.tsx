@@ -1,6 +1,6 @@
 import { MetaFunction } from '@remix-run/node';
 import { useEffect, useState } from 'react';
-import { getRawTweets, getSummery } from '~/common/api.request';
+import { getRawTweets, getSummary } from '~/common/api.request';
 import { Input, Flex, Select, Space, DatePicker, Button, Modal,Spin } from 'antd';
 import CustomTable from '~/components/Table';
 import { useLoaderData } from '@remix-run/react';
@@ -32,9 +32,9 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   const [data, setData] = useState<Tweet[]>([]);
   const [filteredData, setFilteredData] = useState<Tweet[]>([]);
-  const [openSummeryModal,setOpenSummeryModal] = useState<boolean>()
-  const [username,setUsername] = useState<string>("")
-  const [cashtag,setCashtag] = useState<string>("")
+  const [openSummaryModal,setOpenSummaryModal] = useState<boolean>()
+  const [loading,setLoading] = useState<boolean>(false)
+  const [summary,setSummary] = useState<string>("")
   const [filters, setFilters] = useState({
     date: null,
     username: 'All',
@@ -67,7 +67,7 @@ export default function Index() {
   
  useEffect(() => {
     setIsFilterChanged(JSON.stringify(filteredData) !== JSON.stringify(data));
-  }, [filteredData, data]);
+  }, [filteredData]);
 
   const handleFilterChange = (key: keyof Filters, value: string | null) => {
     // Update the filter state
@@ -96,9 +96,14 @@ export default function Index() {
   };
   
 
-  const handleSummery = async() => {
-    setOpenSummeryModal(true)
-    const result = await getSummery(filteredData,username,cashtag)
+  const handleSummary = async() => {
+    setOpenSummaryModal(true)
+    setLoading(true)
+    const result = await getSummary(filteredData)
+    if(result){
+      setSummary(result.summary)
+    }
+    setLoading(false)
   }
 
   
@@ -141,8 +146,8 @@ export default function Index() {
                   />
               </div>
               <div>
-                <h1 className="font-semibold text-sm">Summerize</h1>
-                 <Button type='primary' disabled={!isFilterChanged} onClick={handleSummery}>Get Summery</Button>
+                <h1 className="font-semibold text-sm">summarize</h1>
+                 <Button type='primary' disabled={!isFilterChanged} onClick={handleSummary}>Get summary</Button>
               </div>
             </Space>
           </div>
@@ -151,10 +156,12 @@ export default function Index() {
           <CustomTable tweets={filteredData} />
         </div>
       </div>
-      <Modal width={800} open={openSummeryModal} onCancel={() => setOpenSummeryModal(false)} footer={<Button onClick={() => setOpenSummeryModal(false)}>Close</Button>}>
-        <Flex justify='center' className='h-[60vh]' align='center'>
+      <Modal width={800} height={500} open={openSummaryModal} onCancel={() => setOpenSummaryModal(false)} footer={<Button onClick={() => setOpenSummaryModal(false)}>Close</Button>}>
+      {loading ?   <Flex justify='center' className='h-full' align='center'>
         <Spin/>
-        </Flex>
+        </Flex>: 
+        <div className='p-10'>{summary}</div>
+        }
         </Modal>
     </>
   );

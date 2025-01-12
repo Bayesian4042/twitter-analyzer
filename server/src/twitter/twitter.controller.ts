@@ -121,7 +121,7 @@ export class TwitterController {
 
   @Post('summary')
   async generateSummary(@Body() tweets: any): Promise<{ summary: string }> {
-    const summary = await this.twitter.generateSummaryFromTweets(tweets);
+    const summary = await this.twitter.generateSummaryFromTweets(tweets.tweets);
     return { summary };
   }
 }
