@@ -280,7 +280,7 @@ const analysis = () => {
               dataIndex: 'url',
               key: 'url',
               render: (url: string) => (
-                <a href={url} target="_blank" rel="noopener noreferrer">
+                <a className='text-blue-500' href={url} target="_blank" rel="noopener noreferrer">
                   View Tweet
                 </a>
               )
